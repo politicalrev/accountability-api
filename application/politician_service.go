@@ -18,3 +18,18 @@ func (s *PoliticianService) ListPromisesOfPolitician(id string) ([]domain.Promis
 
 	return politician.Promises, nil
 }
+
+func (s *PoliticianService) SinglePromiseOfPolitician(politicianID string, id int) (*domain.Promise, error) {
+	politician, err := s.PoliticianRepo.PoliticianOfIdentity(politicianID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, promise := range politician.Promises {
+		if promise.ID == id {
+			return &promise, nil
+		}
+	}
+
+	return nil, nil
+}

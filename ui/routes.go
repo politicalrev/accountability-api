@@ -28,5 +28,8 @@ func SetupRoutes(router *gin.Engine) {
 
 		// List promises made by a politician
 		apiV1.GET("/politicians/:politician/promises", apiController.Promises)
+
+		// Get a single promise
+		apiV1.GET("/politicians/:politician/promises/:promise", apiController.Promise)
 	}
 }

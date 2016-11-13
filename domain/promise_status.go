@@ -21,7 +21,7 @@ const (
 
 // PromiseStatus is the status of a Promise's implementation at a point in time
 type PromiseStatus struct {
-	ID        int               `json:"id"`
+	ID        int               `json:"-"`
 	PromiseID int               `json:"-" db:"promise_id"`
 	Promise   *Promise          `json:"-"`
 	Name      PromiseStatusName `json:"name"`
