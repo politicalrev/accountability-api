@@ -1,0 +1,24 @@
+version: '2'
+services:
+  db:
+    image: postgres
+    volumes:
+      - pg-data:/data/postgres
+    environment:
+      POSTGRES_USER: accountability
+      POSTGRES_PASSWORD: SuperDuperSecretSauce123~
+  web:
+    build: .
+    command: gin -p 8000 -a 8001 run
+    environment:
+      ACC_ENVIRONMENT: development
+      ACC_PORT: 8001
+      ACC_DATABASE_DSN: 'host=db user=accountability dbname=accountability password=SuperDuperSecretSauce123~ sslmode=disable'
+    volumes:
+      - .:/go/src/github.com/politicalrev/accountability-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+volumes:
+  pg-data:

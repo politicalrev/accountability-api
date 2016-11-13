@@ -1,0 +1,2 @@
+driver: postgres
+open: host=db user=accountability dbname=accountability password=SuperDuperSecretSauce123~ sslmode=disable
