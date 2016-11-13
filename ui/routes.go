@@ -23,6 +23,12 @@ func SetupRoutes(router *gin.Engine) {
 	{
 		apiV1.GET("/version", apiController.Version)
 
+		// List available categories
+		apiV1.GET("/categories", apiController.Categories)
+
+		// List available statuses
+		apiV1.GET("/statuses", apiController.Statuses)
+
 		// List politicians tracked
 		apiV1.GET("/politicians", apiController.Politicians)
 
@@ -31,5 +37,17 @@ func SetupRoutes(router *gin.Engine) {
 
 		// Get a single promise
 		apiV1.GET("/politicians/:politician/promises/:promise", apiController.Promise)
+
+		// See suggestions pending moderation
+		apiV1.GET("/politicians/:politician/suggestions", apiController.Suggestions)
+
+		// Submit promise data for moderation
+		apiV1.POST("/politicians/:politician/suggestions", apiController.SubmitSuggestion)
+
+		// Accept a suggestion
+		apiV1.POST("/politicians/:politician/suggestions/:id/accept", apiController.AcceptSuggestion)
+
+		// Reject a suggestion
+		apiV1.POST("/politicians/:politician/suggestions/:id/reject", apiController.RejectSuggestion)
 	}
 }

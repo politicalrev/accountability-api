@@ -37,3 +37,16 @@ type Promise struct {
 	Category     PromiseCategory `json:"category" db:"category"`
 	Sources      []Source        `json:"sources"`
 }
+
+// ValidCategories returns all the allowed categories
+func ValidCategories() []PromiseCategory {
+	return []PromiseCategory{
+		Climate,
+		Culture,
+		Economy,
+		Government,
+		Healthcare,
+		Immigration,
+		Security,
+	}
+}

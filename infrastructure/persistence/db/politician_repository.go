@@ -1,6 +1,9 @@
 package db
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/politicalrev/accountability-api/domain"
 )
@@ -37,6 +40,44 @@ func (r *PoliticianRepository) PoliticianOfIdentity(id string) (*domain.Politici
 
 // Save persists the politician data to the database
 func (r *PoliticianRepository) Save(*domain.Politician) error {
+	return fmt.Errorf("Not implemented")
+}
+
+// SuggestionsOfPolitician returns all the suggestions submitted for a politician
+func (r *PoliticianRepository) SuggestionsOfPolitician(p *domain.Politician) ([]domain.Suggestion, error) {
+	suggestions := []domain.Suggestion{}
+	if err := r.DB.Select(&suggestions, "select * from moderation_queue"); err != nil {
+		return nil, err
+	}
+
+	return suggestions, nil
+}
+
+// SaveSuggestion persists a suggestion
+func (r *PoliticianRepository) SaveSuggestion(s *domain.Suggestion) error {
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return err
+	}
+
+	tx.Exec(`
+        insert into moderation_queue (created_at, politician_id, promise, status, status_detail, category, source_name, source_link)
+        values ($1, $2, $3, $4, $5, $6, $7, $8)
+        `,
+		time.Now(),
+		s.PoliticianID,
+		s.Promise,
+		s.Status,
+		s.StatusDetail,
+		s.Category,
+		s.SourceName,
+		s.SourceLink,
+	)
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
 	return nil
 }
 

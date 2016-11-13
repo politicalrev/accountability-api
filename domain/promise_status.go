@@ -29,3 +29,13 @@ type PromiseStatus struct {
 	Detail    string            `json:"detail"`
 	Sources   []Source          `json:"sources,omitempty"`
 }
+
+// ValidStatuses returns the names of the valid statuses for a promise to be in
+func ValidStatuses() []PromiseStatusName {
+	return []PromiseStatusName{
+		NotStarted,
+		InProgress,
+		Accomplished,
+		Failed,
+	}
+}

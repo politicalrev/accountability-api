@@ -12,12 +12,13 @@ type Politician struct {
 // CreatePromise adds a new Promise for this Politician
 func (p *Politician) CreatePromise(name string, details string, status PromiseStatus, category PromiseCategory, source Source) {
 	p.Promises = append(p.Promises, Promise{
-		Politician: p,
-		Name:       name,
-		Details:    details,
-		History:    []PromiseStatus{status},
-		Category:   category,
-		Sources:    []Source{source},
+		PoliticianID: p.ID,
+		Politician:   p,
+		Name:         name,
+		Details:      details,
+		History:      []PromiseStatus{status},
+		Category:     category,
+		Sources:      []Source{source},
 	})
 }
 
@@ -26,4 +27,7 @@ type PoliticianRepository interface {
 	All() ([]Politician, error)
 	PoliticianOfIdentity(string) (*Politician, error)
 	Save(*Politician) error
+
+	SuggestionsOfPolitician(*Politician) ([]Suggestion, error)
+	SaveSuggestion(*Suggestion) error
 }
