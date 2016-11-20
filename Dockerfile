@@ -10,7 +10,7 @@ RUN go get -v -d ./...
 
 # Download tools
 RUN go get -v github.com/codegangsta/gin
-RUN go get -v -tags nosqlite3,nomysql,nomymysql github.com/CloudCom/goose/cmd/goose
+RUN go get -v -tags nosqlite3 github.com/CloudCom/goose/cmd/goose
 
 EXPOSE "4000"
 ENTRYPOINT ["bash", "-c", "goose up && go run app.go"]
