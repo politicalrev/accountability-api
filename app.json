@@ -8,7 +8,7 @@
   "repository": "https://github.com/politicalrev/accountability-api",
   "scripts": {
     "dokku": {
-      "postdeploy": "goose up",
+      "predeploy": "goose up",
     }
   },
   "env": {
