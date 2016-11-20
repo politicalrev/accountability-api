@@ -11,3 +11,5 @@ RUN go get -v -d ./...
 # Download tools
 RUN go get -v github.com/codegangsta/gin
 RUN go get -v github.com/CloudCom/goose/cmd/goose
+
+ENTRYPOINT ["go", "run", "app.go"]
