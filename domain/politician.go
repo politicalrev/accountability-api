@@ -30,4 +30,6 @@ type PoliticianRepository interface {
 
 	SuggestionsOfPolitician(*Politician) ([]Suggestion, error)
 	SaveSuggestion(*Suggestion) error
+	AcceptSuggestion(*Suggestion) (*Promise, error)
+	RejectSuggestion(*Suggestion) error
 }

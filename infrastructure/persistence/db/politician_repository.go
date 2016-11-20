@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/politicalrev/accountability-api/domain"
@@ -46,7 +45,7 @@ func (r *PoliticianRepository) Save(*domain.Politician) error {
 // SuggestionsOfPolitician returns all the suggestions submitted for a politician
 func (r *PoliticianRepository) SuggestionsOfPolitician(p *domain.Politician) ([]domain.Suggestion, error) {
 	suggestions := []domain.Suggestion{}
-	if err := r.DB.Select(&suggestions, "select * from moderation_queue"); err != nil {
+	if err := r.DB.Select(&suggestions, "select * from moderation_queue where accepted_at is null and deleted_at is null"); err != nil {
 		return nil, err
 	}
 
@@ -62,9 +61,8 @@ func (r *PoliticianRepository) SaveSuggestion(s *domain.Suggestion) error {
 
 	tx.Exec(`
         insert into moderation_queue (created_at, politician_id, promise, status, status_detail, category, source_name, source_link)
-        values ($1, $2, $3, $4, $5, $6, $7, $8)
+        values (NOW(), $1, $2, $3, $4, $5, $6, $7)
         `,
-		time.Now(),
 		s.PoliticianID,
 		s.Promise,
 		s.Status,
@@ -72,6 +70,102 @@ func (r *PoliticianRepository) SaveSuggestion(s *domain.Suggestion) error {
 		s.Category,
 		s.SourceName,
 		s.SourceLink,
+	)
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// AcceptSuggestion converts a suggestion to a promise
+func (r *PoliticianRepository) AcceptSuggestion(s *domain.Suggestion) (*domain.Promise, error) {
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	// Mark the suggestion as accepted
+	tx.Exec(`
+        update moderation_queue
+        set accepted_at = NOW(),
+            accepted_by = $1
+        where
+            id = $2
+        `,
+		s.AcceptedBy,
+		s.ID,
+	)
+
+	// Insert the promise
+	tx.Exec(`
+        insert into promises (politician_id, name, category)
+        values ($1, $2, $3)
+        `,
+		s.PoliticianID,
+		s.Promise,
+		s.Category,
+	)
+
+	// And status
+	tx.Exec(`
+        insert into promise_status (promise_id, name, updated_on, detail)
+        select currval('promises_id_seq'), $1, NOW(), $2
+        `,
+		s.Status,
+		s.StatusDetail,
+	)
+
+	// And source
+	tx.Exec(`
+        insert into sources (name, link)
+        values ($1, $2)
+        `,
+		s.SourceName,
+		s.SourceLink,
+	)
+
+	tx.Exec(`
+        insert into promise_sources (promise_id, source_id)
+        select currval('promises_id_seq'), currval('sources_id_seq')
+        `,
+	)
+
+	tx.Exec(`
+        insert into promise_status_sources (status_id, source_id)
+        select currval('promise_status_id_seq'), currval('sources_id_seq')
+        `,
+	)
+
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	var promise domain.Promise
+	if err := r.DB.Get(&promise, "select * from promises order by id desc limit 1"); err != nil {
+		return nil, err
+	}
+
+	return &promise, nil
+}
+
+// RejectSuggestion removes a suggestion
+func (r *PoliticianRepository) RejectSuggestion(s *domain.Suggestion) error {
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return err
+	}
+
+	tx.Exec(`
+        update moderation_queue
+        set deleted_at = NOW(),
+            deleted_by = $1
+        where
+            id = $2
+        `,
+		s.DeletedBy,
+		s.ID,
 	)
 
 	if err = tx.Commit(); err != nil {

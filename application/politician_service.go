@@ -1,6 +1,11 @@
 package application
 
-import "github.com/politicalrev/accountability-api/domain"
+import (
+	"database/sql"
+	"fmt"
+
+	"github.com/politicalrev/accountability-api/domain"
+)
 
 type PoliticianService struct {
 	PoliticianRepo domain.PoliticianRepository
@@ -77,4 +82,40 @@ func (s *PoliticianService) SubmitSuggestionForModeration(politicianID, promise,
 		SourceName:   sourceName,
 		SourceLink:   sourceLink,
 	})
+}
+
+func (s *PoliticianService) AcceptSuggestion(politicianID string, suggestionID int, userID string) (*domain.Promise, error) {
+	suggestions, err := s.ListSuggestions(politicianID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, sugg := range suggestions {
+		if sugg.ID == suggestionID {
+			sugg.AcceptedBy = toNullString(userID)
+			return s.PoliticianRepo.AcceptSuggestion(&sugg)
+		}
+	}
+
+	return nil, fmt.Errorf("No suggestion of ID %d", suggestionID)
+}
+
+func (s *PoliticianService) RejectSuggestion(politicianID string, suggestionID int, userID string) error {
+	suggestions, err := s.ListSuggestions(politicianID)
+	if err != nil {
+		return err
+	}
+
+	for _, sugg := range suggestions {
+		if sugg.ID == suggestionID {
+			sugg.DeletedBy = toNullString(userID)
+			return s.PoliticianRepo.RejectSuggestion(&sugg)
+		}
+	}
+
+	return fmt.Errorf("No suggestion of ID %d", suggestionID)
+}
+
+func toNullString(s string) sql.NullString {
+	return sql.NullString{String: s, Valid: s != ""}
 }

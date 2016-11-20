@@ -132,11 +132,35 @@ func (l *APIController) SubmitSuggestion(c *gin.Context) {
 }
 
 func (l *APIController) AcceptSuggestion(c *gin.Context) {
-	c.JSON(http.StatusNotImplemented, gin.H{"message": "error", "data": "Not Implemented"})
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		l.requestErrorReponse(err, c)
+		return
+	}
+
+	promise, err := l.PoliticianSvc.AcceptSuggestion(c.Param("politician"), id, c.Query("user"))
+	if err != nil {
+		l.serverErrorReponse(err, c)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "ok", "data": promise})
 }
 
 func (l *APIController) RejectSuggestion(c *gin.Context) {
-	c.JSON(http.StatusNotImplemented, gin.H{"message": "error", "data": "Not Implemented"})
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		l.requestErrorReponse(err, c)
+		return
+	}
+
+	err = l.PoliticianSvc.RejectSuggestion(c.Param("politician"), id, c.Query("user"))
+	if err != nil {
+		l.serverErrorReponse(err, c)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
 
 func (l *APIController) requestErrorReponse(err error, c *gin.Context) {

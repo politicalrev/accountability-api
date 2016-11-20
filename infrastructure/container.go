@@ -16,15 +16,28 @@ import (
 // Container is a service locator
 type Container struct {
 	// Application
+	apiClientSvc  *application.APIClientService
 	politicianSvc *application.PoliticianService
 
 	// Infrastructure
 	db *sqlx.DB
 
+	apiClientRepo  domain.APIClientRepository
 	politicianRepo domain.PoliticianRepository
 
 	// UI
 	apiController *controller.APIController
+}
+
+// APIClientService returns an initialized application service for dealing with APIClients
+func (c *Container) APIClientService() *application.APIClientService {
+	if c.apiClientSvc == nil {
+		c.apiClientSvc = &application.APIClientService{
+			APIClientRepo: c.apiClientRepository(),
+		}
+	}
+
+	return c.apiClientSvc
 }
 
 // PoliticianService returns an initialized application service for dealing with Politicians
@@ -49,6 +62,16 @@ func (c *Container) database() *sqlx.DB {
 	}
 
 	return c.db
+}
+
+func (c *Container) apiClientRepository() domain.APIClientRepository {
+	if c.apiClientRepo == nil {
+		c.apiClientRepo = &db.APIClientRepository{
+			DB: c.database(),
+		}
+	}
+
+	return c.apiClientRepo
 }
 
 func (c *Container) politicianRepository() domain.PoliticianRepository {

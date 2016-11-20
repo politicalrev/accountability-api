@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: SuperDuperSecretSauce123~
   web:
     build: .
-    command: gin -p 8000 -a 8001 run
+    entrypoint: gin -p 8000 -a 8001 run
     environment:
       ENVIRONMENT: development
       PORT: 8001
