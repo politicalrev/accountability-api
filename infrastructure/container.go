@@ -40,8 +40,7 @@ func (c *Container) PoliticianService() *application.PoliticianService {
 
 func (c *Container) database() *sqlx.DB {
 	if c.db == nil {
-		log.Println(viper.GetString("database_dsn"))
-		db, err := sqlx.Connect("postgres", viper.GetString("database_dsn"))
+		db, err := sqlx.Connect("postgres", viper.GetString("database_url"))
 		if err != nil {
 			log.Fatalln(err)
 		}

@@ -11,9 +11,9 @@ services:
     build: .
     command: gin -p 8000 -a 8001 run
     environment:
-      ACC_ENVIRONMENT: development
-      ACC_PORT: 8001
-      ACC_DATABASE_DSN: 'host=db user=accountability dbname=accountability password=SuperDuperSecretSauce123~ sslmode=disable'
+      ENVIRONMENT: development
+      PORT: 8001
+      DATABASE_URL: 'host=db user=accountability dbname=accountability password=SuperDuperSecretSauce123~ sslmode=disable'
     volumes:
       - .:/go/src/github.com/politicalrev/accountability-api
     ports:

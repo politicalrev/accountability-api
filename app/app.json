@@ -1,0 +1,34 @@
+{
+  "name": "accountability-api",
+  "description": "Go API for tracking political promises",
+  "keywords": [
+    "go",
+    "politics"
+  ],
+  "repository": "https://github.com/politicalrev/accountability-api",
+  "scripts": {
+    "dokku": {
+      "predeploy": "touch /app/predeploy.test",
+      "postdeploy": "curl https://some.external.api.service.com/deployment?state=success"
+    }
+  },
+  "env": {
+      "ENVIRONMENT": {
+          "description": "The environment to deploy the code for",
+          "value": "production"
+      },
+      "PORT": {
+          "description": "The port the application should listen for requests on",
+          "value": "4000"
+      }
+  },
+  "image": "gliderlabs/herokuish",
+  "addons": [
+    "dokku-postgres"
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-go"
+    }
+  ]
+}

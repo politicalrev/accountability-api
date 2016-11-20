@@ -7,7 +7,6 @@ import (
 
 func init() {
 	// Load config on package init
-	viper.SetEnvPrefix("acc")
 	viper.AutomaticEnv()
 
 	// Configure gin environment
