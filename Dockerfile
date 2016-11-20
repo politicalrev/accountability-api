@@ -12,4 +12,5 @@ RUN go get -v -d ./...
 RUN go get -v github.com/codegangsta/gin
 RUN go get -v github.com/CloudCom/goose/cmd/goose
 
+EXPOSE "4000"
 ENTRYPOINT ["go", "run", "app.go"]
