@@ -13,10 +13,6 @@ type APIController struct {
 	PoliticianSvc *application.PoliticianService
 }
 
-func (l *APIController) Version(c *gin.Context) {
-	c.String(http.StatusOK, "1")
-}
-
 func (l *APIController) Politicians(c *gin.Context) {
 	politicians, err := l.PoliticianSvc.ListPoliticians()
 	if err != nil {

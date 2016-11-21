@@ -4,10 +4,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/politicalrev/accountability-api/infrastructure"
 	"github.com/politicalrev/accountability-api/ui/middleware"
-
-	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes(router *gin.Engine) {
@@ -21,7 +20,7 @@ func SetupRoutes(router *gin.Engine) {
 
 	// API routes
 	apiController := container.APIController()
-	apiV1 := router.Group("/api")
+	apiV1 := router.Group("/v1")
 
 	// Authentication requires a key/secret pair
 	apiClientSvc := container.APIClientService()
@@ -33,8 +32,6 @@ func SetupRoutes(router *gin.Engine) {
 
 	// All api requests are logged
 	apiV1.Use(middleware.LogRequest(apiClientSvc))
-
-	apiV1.GET("/version", apiController.Version)
 
 	// List available categories
 	apiV1.GET("/categories", apiController.Categories)
